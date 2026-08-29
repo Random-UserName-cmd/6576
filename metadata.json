@@ -1,0 +1,6 @@
+{
+  "name": "Site Notice & Admin Portal",
+  "description": "Website shutdown notice with pondyy.net redirection, client IP badge, and authenticated admin customization portal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
