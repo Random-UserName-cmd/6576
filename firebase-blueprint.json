@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Site Notice & Admin Portal Database Schema",
+  "description": "Firestore schema for website shutdown notice, theme styles, typography, and admin configuration.",
+  "entities": {
+    "settings": {
+      "title": "Site Settings",
+      "description": "Global application configuration for shutdown notice and typography styles.",
+      "type": "object",
+      "properties": {
+        "headline": {
+          "type": "string",
+          "description": "Primary shutdown notice headline"
+        },
+        "subtext": {
+          "type": "string",
+          "description": "Subtext or redirection prompt"
+        },
+        "linkUrl": {
+          "type": "string",
+          "description": "Target redirection URL (e.g. pondyy.net)"
+        },
+        "linkLabel": {
+          "type": "string",
+          "description": "Label text on action button"
+        },
+        "showBadge": {
+          "type": "boolean",
+          "description": "Whether status pill badge is visible"
+        },
+        "badgeText": {
+          "type": "string",
+          "description": "Status text displayed on pill"
+        },
+        "badgeStatus": {
+          "type": "string",
+          "description": "Status severity (warning, alert, info, maintenance)"
+        },
+        "fontFamily": {
+          "type": "string",
+          "description": "Active typography font family"
+        },
+        "fontSize": {
+          "type": "string",
+          "description": "Headline font size scale"
+        },
+        "fontWeight": {
+          "type": "string",
+          "description": "Headline font weight"
+        },
+        "alignment": {
+          "type": "string",
+          "description": "Text alignment (center or left)"
+        },
+        "accentColor": {
+          "type": "string",
+          "description": "Theme accent color"
+        },
+        "backgroundStyle": {
+          "type": "string",
+          "description": "Background visual style (grid, dots, glow, clean)"
+        },
+        "cardStyle": {
+          "type": "string",
+          "description": "Notice container card style"
+        },
+        "customNotice": {
+          "type": "string",
+          "description": "Optional secondary notice or notes"
+        },
+        "supportEmail": {
+          "type": "string",
+          "description": "Support contact email"
+        },
+        "showCountdown": {
+          "type": "boolean",
+          "description": "Whether countdown timer is enabled"
+        },
+        "estimatedReturnTime": {
+          "type": "string",
+          "description": "Estimated service restoration timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last configuration update"
+        }
+      },
+      "required": ["headline", "subtext", "linkUrl", "linkLabel"]
+    }
+  }
+}

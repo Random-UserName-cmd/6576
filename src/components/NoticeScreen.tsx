@@ -18,6 +18,7 @@ import { SiteConfig, FontFamily, FontSize, FontWeight, AccentColor, BackgroundSt
 interface NoticeScreenProps {
   config: SiteConfig;
   isAdminLoggedIn: boolean;
+  isFirebaseConnected?: boolean;
   onOpenAdminLogin: () => void;
   onOpenAdminPanel: () => void;
 }
@@ -25,6 +26,7 @@ interface NoticeScreenProps {
 export function NoticeScreen({
   config,
   isAdminLoggedIn,
+  isFirebaseConnected = false,
   onOpenAdminLogin,
   onOpenAdminPanel,
 }: NoticeScreenProps) {

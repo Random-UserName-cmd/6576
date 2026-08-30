@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   X, 
@@ -12,7 +12,9 @@ import {
   Check, 
   LogOut, 
   Sparkles,
-  LayoutTemplate
+  LayoutTemplate,
+  Cloud,
+  CloudCheck
 } from 'lucide-react';
 import { 
   SiteConfig, 
@@ -30,6 +32,7 @@ interface AdminPanelProps {
   isOpen: boolean;
   onClose: () => void;
   config: SiteConfig;
+  isFirebaseConnected?: boolean;
   onUpdateConfig: (newConfig: SiteConfig) => void;
   onResetConfig: () => void;
   onLogout: () => void;
@@ -41,6 +44,7 @@ export function AdminPanel({
   isOpen,
   onClose,
   config,
+  isFirebaseConnected = false,
   onUpdateConfig,
   onResetConfig,
   onLogout,
@@ -48,6 +52,12 @@ export function AdminPanel({
   const [activeTab, setActiveTab] = useState<TabType>('content');
   const [localConfig, setLocalConfig] = useState<SiteConfig>(config);
   const [showSavedToast, setShowSavedToast] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Sync state if external config changed (e.g. via real-time Firestore sync)
+  useEffect(() => {
+    setLocalConfig(config);
+  }, [config]);
 
   // Sync state if external config changed
   const handleChange = <K extends keyof SiteConfig>(key: K, value: SiteConfig[K]) => {
@@ -57,10 +67,15 @@ export function AdminPanel({
     onUpdateConfig(updated);
   };
 
-  const handleSave = () => {
-    onUpdateConfig(localConfig);
-    setShowSavedToast(true);
-    setTimeout(() => setShowSavedToast(false), 2500);
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onUpdateConfig(localConfig);
+      setShowSavedToast(true);
+      setTimeout(() => setShowSavedToast(false), 2500);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleReset = () => {
@@ -650,12 +665,13 @@ export function AdminPanel({
               )}
             </div>
 
-            {/* Footer with Save, Reset, Done */}
+            {/* Footer with Save, Reset, Cloud status */}
             <div className="p-4 px-6 border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-950/50 flex items-center justify-between gap-3">
               <button
                 id="admin-reset-btn"
                 onClick={handleReset}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200/60 dark:hover:bg-neutral-800 transition-colors"
+                disabled={isSaving}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-200/60 dark:hover:bg-neutral-800 transition-colors disabled:opacity-50"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Reset Defaults</span>
@@ -665,10 +681,20 @@ export function AdminPanel({
                 <button
                   id="admin-save-btn"
                   onClick={handleSave}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-neutral-900 dark:bg-amber-500 text-white dark:text-neutral-950 hover:opacity-90 transition-opacity shadow-md cursor-pointer"
+                  disabled={isSaving}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-neutral-900 dark:bg-amber-500 text-white dark:text-neutral-950 hover:opacity-90 transition-opacity shadow-md cursor-pointer disabled:opacity-50"
                 >
-                  <Save className="w-3.5 h-3.5" />
-                  <span>Save Changes</span>
+                  {isSaving ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      <span>Saving to Cloud...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-3.5 h-3.5" />
+                      <span>Save Changes</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -684,7 +710,7 @@ export function AdminPanel({
                 >
                   <div className="flex items-center gap-2">
                     <Check className="w-4 h-4" />
-                    <span>Configuration successfully saved!</span>
+                    <span>Saved & synchronized with Cloud Firestore</span>
                   </div>
                 </motion.div>
               )}
